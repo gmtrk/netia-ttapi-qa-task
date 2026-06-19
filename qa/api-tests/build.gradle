@@ -1,0 +1,49 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.11.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation 'io.rest-assured:rest-assured:5.5.0'
+    testImplementation 'org.assertj:assertj-core:3.26.3'
+    testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+        exceptionFormat = 'full'
+    }
+    System.properties.each { key, value ->
+        if (key.toString().startsWith('ttapi.')) {
+            systemProperty(key.toString(), value.toString())
+        }
+    }
+    def credentialsFile = new File(rootDir.parentFile, 'credentials.env')
+    if (credentialsFile.exists()) {
+        credentialsFile.eachLine { line ->
+            def trimmed = line.trim()
+            if (!trimmed.isEmpty() && !trimmed.startsWith('#') && trimmed.contains('=')) {
+                def separator = trimmed.indexOf('=')
+                def name = trimmed.substring(0, separator).trim()
+                def value = trimmed.substring(separator + 1).trim()
+                if (System.getenv(name) == null) {
+                    environment(name, value)
+                }
+            }
+        }
+    }
+}
