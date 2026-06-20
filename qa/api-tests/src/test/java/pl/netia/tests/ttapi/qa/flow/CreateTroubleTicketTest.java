@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 
 import java.util.List;
@@ -132,5 +133,31 @@ class CreateTroubleTicketTest extends BaseTest {
                 .then()
                 .statusCode(200)
                 .body("description", equalTo("QA fixture ticket"));
+    }
+
+    @Test
+    @DisplayName("TC-FLOW-05 — repeated create on the idempotency path does not add the supplied note")
+    void repeatedCreateDoesNotAddSuppliedNote() {
+        String externalId = TicketFixtures.uniqueExternalId();
+        CreatedTickets.record(Tenant.ALPHA, externalId);
+
+        TroubleTicketApi.asTenant(Tenant.ALPHA)
+                .body(TicketFixtures.newTicketPayload(externalId, TicketFixtures.ACKNOWLEDGED_SERVICE_ID))
+                .when()
+                .post(TroubleTicketApi.TICKETS)
+                .then()
+                .statusCode(201)
+                .body("notes", hasSize(0));
+
+        Map<String, Object> payloadWithNote = TicketFixtures.newTicketPayload(externalId, TicketFixtures.ACKNOWLEDGED_SERVICE_ID);
+        payloadWithNote.put("note", "This note must be ignored on the idempotency path");
+
+        TroubleTicketApi.asTenant(Tenant.ALPHA)
+                .body(payloadWithNote)
+                .when()
+                .post(TroubleTicketApi.TICKETS)
+                .then()
+                .statusCode(200)
+                .body("notes", hasSize(0));
     }
 }
