@@ -1,0 +1,12 @@
+[
+  {
+    "name": "Known application defects (spec divergence)",
+    "description": "Oczekiwane niepowodzenia. Aplikacja rozjeżdża się ze specyfikacją (OpenAPI + TASK.md), która jest źródłem prawdy. Te testy poprawnie ujawniają realne defekty produktu (m.in. parity bug przy statusie początkowym oraz brak walidacji zakresu serviceId).",
+    "matchedStatuses": ["failed"]
+  },
+  {
+    "name": "Test infrastructure problems",
+    "description": "Błędy uruchomieniowe (np. niedostępny stack, Keycloak, baza), nie wynik kontraktu. Wymagają naprawy środowiska, nie aplikacji.",
+    "matchedStatuses": ["broken", "unknown"]
+  }
+]

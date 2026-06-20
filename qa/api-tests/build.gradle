@@ -19,6 +19,7 @@ dependencies {
     testImplementation 'org.assertj:assertj-core:3.26.3'
     testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'
     testImplementation 'org.postgresql:postgresql:42.7.4'
+    testImplementation 'io.qameta.allure:allure-junit5:2.29.0'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
@@ -28,6 +29,9 @@ tasks.named('test') {
         events 'passed', 'skipped', 'failed'
         exceptionFormat = 'full'
     }
+    def allureResultsDir = System.getProperty('allure.results.directory')
+            ?: layout.buildDirectory.dir('allure-results').get().asFile.absolutePath
+    systemProperty 'allure.results.directory', allureResultsDir
     System.properties.each { key, value ->
         if (key.toString().startsWith('ttapi.')) {
             systemProperty(key.toString(), value.toString())

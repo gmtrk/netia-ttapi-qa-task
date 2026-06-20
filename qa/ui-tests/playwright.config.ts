@@ -6,7 +6,11 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
-  reporter: [['list'], ['html', { open: 'never' }]],
+  reporter: [
+    ['list'],
+    ['html', { open: 'never' }],
+    ['allure-playwright', { resultsDir: 'allure-results' }],
+  ],
   use: {
     baseURL: uiBaseUrl,
     trace: 'on-first-retry',
@@ -18,7 +22,7 @@ export default defineConfig({
       testMatch: /.*\.setup\.ts/,
     },
     {
-      name: 'chrome',
+      name: 'UI',
       use: {
         ...devices['Desktop Chrome'],
         channel: 'chrome',
