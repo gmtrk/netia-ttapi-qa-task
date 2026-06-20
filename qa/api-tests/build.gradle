@@ -18,6 +18,7 @@ dependencies {
     testImplementation 'io.rest-assured:rest-assured:5.5.0'
     testImplementation 'org.assertj:assertj-core:3.26.3'
     testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'
+    testImplementation 'org.postgresql:postgresql:42.7.4'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 

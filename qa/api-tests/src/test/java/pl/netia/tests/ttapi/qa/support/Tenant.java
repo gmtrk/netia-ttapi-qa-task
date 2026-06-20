@@ -13,4 +13,8 @@ public enum Tenant {
     public String password() {
         return TestEnvironment.KEYCLOAK_PASSWORD;
     }
+
+    public String tenantId() {
+        return name().toLowerCase();
+    }
 }

@@ -6,18 +6,23 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import pl.netia.tests.ttapi.qa.support.ApiErrorAssertions;
+import pl.netia.tests.ttapi.qa.support.BaseTest;
+import pl.netia.tests.ttapi.qa.support.CreatedTickets;
 import pl.netia.tests.ttapi.qa.support.Tenant;
 import pl.netia.tests.ttapi.qa.support.TicketFixtures;
 import pl.netia.tests.ttapi.qa.support.TroubleTicketApi;
 
-class ServiceIdValidationTest {
+class ServiceIdValidationTest extends BaseTest {
 
     @ParameterizedTest
     @ValueSource(ints = {100001, 100030})
     @DisplayName("TC-API-01, TC-API-02 — serviceId at the valid-range boundaries is accepted")
     void createWithServiceIdInValidRangeIsAccepted(int serviceId) {
+        String externalId = TicketFixtures.uniqueExternalId();
+        CreatedTickets.record(Tenant.ALPHA, externalId);
+
         TroubleTicketApi.asTenant(Tenant.ALPHA)
-                .body(TicketFixtures.newTicketPayload(TicketFixtures.uniqueExternalId(), serviceId))
+                .body(TicketFixtures.newTicketPayload(externalId, serviceId))
                 .when()
                 .post(TroubleTicketApi.TICKETS)
                 .then()
@@ -29,8 +34,11 @@ class ServiceIdValidationTest {
     @Tag("defect")
     @DisplayName("TC-API-03, TC-API-04, TC-API-06 — serviceId outside the valid range returns 404 SERVICE_NOT_FOUND")
     void createWithServiceIdOutsideValidRangeReturnsServiceNotFound(int serviceId) {
+        String externalId = TicketFixtures.uniqueExternalId();
+        CreatedTickets.record(Tenant.ALPHA, externalId);
+
         Response response = TroubleTicketApi.asTenant(Tenant.ALPHA)
-                .body(TicketFixtures.newTicketPayload(TicketFixtures.uniqueExternalId(), serviceId))
+                .body(TicketFixtures.newTicketPayload(externalId, serviceId))
                 .when()
                 .post(TroubleTicketApi.TICKETS)
                 .then()

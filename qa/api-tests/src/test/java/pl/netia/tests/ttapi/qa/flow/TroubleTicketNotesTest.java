@@ -5,11 +5,12 @@ import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import pl.netia.tests.ttapi.qa.support.ApiErrorAssertions;
+import pl.netia.tests.ttapi.qa.support.BaseTest;
 import pl.netia.tests.ttapi.qa.support.Tenant;
 import pl.netia.tests.ttapi.qa.support.TicketFixtures;
 import pl.netia.tests.ttapi.qa.support.TroubleTicketApi;
 
-class TroubleTicketNotesTest {
+class TroubleTicketNotesTest extends BaseTest {
 
     private static final Map<String, Object> NOTE_REQUEST = Map.of("text", "Customer called for an update");
 

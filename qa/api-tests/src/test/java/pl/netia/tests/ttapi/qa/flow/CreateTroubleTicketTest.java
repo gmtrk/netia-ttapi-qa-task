@@ -13,16 +13,20 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import pl.netia.tests.ttapi.qa.support.BaseTest;
+import pl.netia.tests.ttapi.qa.support.CreatedTickets;
 import pl.netia.tests.ttapi.qa.support.Tenant;
 import pl.netia.tests.ttapi.qa.support.TicketFixtures;
+import pl.netia.tests.ttapi.qa.support.TicketStatus;
 import pl.netia.tests.ttapi.qa.support.TroubleTicketApi;
 
-class CreateTroubleTicketTest {
+class CreateTroubleTicketTest extends BaseTest {
 
     @Test
     @DisplayName("TC-FLOW-01 — create with valid data returns 201 with Location and echoed fields")
     void createWithValidDataReturnsCreatedResource() {
         String externalId = TicketFixtures.uniqueExternalId();
+        CreatedTickets.record(Tenant.ALPHA, externalId);
 
         TroubleTicketApi.asTenant(Tenant.ALPHA)
                 .body(TicketFixtures.newTicketPayload(externalId, TicketFixtures.ACKNOWLEDGED_SERVICE_ID))
@@ -41,19 +45,23 @@ class CreateTroubleTicketTest {
     @Tag("defect")
     @DisplayName("TC-FLOW-01 — created ticket has status acknowledged for any valid serviceId")
     void createReturnsAcknowledgedStatusForAnyValidServiceId(int serviceId) {
+        String externalId = TicketFixtures.uniqueExternalId();
+        CreatedTickets.record(Tenant.ALPHA, externalId);
+
         TroubleTicketApi.asTenant(Tenant.ALPHA)
-                .body(TicketFixtures.newTicketPayload(TicketFixtures.uniqueExternalId(), serviceId))
+                .body(TicketFixtures.newTicketPayload(externalId, serviceId))
                 .when()
                 .post(TroubleTicketApi.TICKETS)
                 .then()
                 .statusCode(201)
-                .body("status", equalTo("acknowledged"));
+                .body("status", equalTo(TicketStatus.ACKNOWLEDGED.apiValue()));
     }
 
     @Test
     @DisplayName("TC-FLOW-02 — create with an initial note stores the note on the ticket")
     void createWithInitialNoteStoresNote() {
         String externalId = TicketFixtures.uniqueExternalId();
+        CreatedTickets.record(Tenant.ALPHA, externalId);
         Map<String, Object> payload = TicketFixtures.newTicketPayload(externalId, TicketFixtures.ACKNOWLEDGED_SERVICE_ID);
         payload.put("note", "Initial diagnostic note");
 
@@ -72,6 +80,7 @@ class CreateTroubleTicketTest {
     @DisplayName("TC-FLOW-03 — repeated create with same externalId returns 200 with the existing resource, no duplicate")
     void repeatedCreateWithSameExternalIdReturnsExistingResourceWithoutDuplicate() {
         String externalId = TicketFixtures.uniqueExternalId();
+        CreatedTickets.record(Tenant.ALPHA, externalId);
         Map<String, Object> payload = TicketFixtures.newTicketPayload(externalId, TicketFixtures.ACKNOWLEDGED_SERVICE_ID);
 
         TroubleTicketApi.asTenant(Tenant.ALPHA)
@@ -104,6 +113,7 @@ class CreateTroubleTicketTest {
     @DisplayName("TC-FLOW-04 — repeated create with changed fields returns the original, unmodified resource")
     void repeatedCreateDoesNotOverwriteExistingResource() {
         String externalId = TicketFixtures.uniqueExternalId();
+        CreatedTickets.record(Tenant.ALPHA, externalId);
 
         TroubleTicketApi.asTenant(Tenant.ALPHA)
                 .body(TicketFixtures.newTicketPayload(externalId, TicketFixtures.ACKNOWLEDGED_SERVICE_ID))

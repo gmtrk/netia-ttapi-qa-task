@@ -8,6 +8,9 @@ public final class TestEnvironment {
     public static final String KEYCLOAK_REALM = resolve("ttapi.keycloak.realm", "TTAPI_KEYCLOAK_REALM", "ttapi");
     public static final String KEYCLOAK_CLIENT_ID = resolve("ttapi.keycloak.clientId", "TTAPI_KEYCLOAK_CLIENT_ID", "ttapi-client");
     public static final String KEYCLOAK_PASSWORD = require("ttapi.password", "TTAPI_PASSWORD");
+    public static final String DB_URL = resolve("ttapi.db.url", "TTAPI_DB_URL", "jdbc:postgresql://localhost:5432/rest_db");
+    public static final String DB_USERNAME = resolve("ttapi.db.username", "TTAPI_DB_USERNAME", "postgres");
+    public static final String DB_PASSWORD = resolve("ttapi.db.password", "TTAPI_DB_PASSWORD", "postgres");
 
     private TestEnvironment() {
     }

@@ -9,11 +9,13 @@ import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import pl.netia.tests.ttapi.qa.support.ApiErrorAssertions;
+import pl.netia.tests.ttapi.qa.support.BaseTest;
+import pl.netia.tests.ttapi.qa.support.CreatedTickets;
 import pl.netia.tests.ttapi.qa.support.Tenant;
 import pl.netia.tests.ttapi.qa.support.TicketFixtures;
 import pl.netia.tests.ttapi.qa.support.TroubleTicketApi;
 
-class TenantIsolationTest {
+class TenantIsolationTest extends BaseTest {
 
     @Test
     @DisplayName("TC-SEC-01 — list returns only the caller's own tenant tickets")
@@ -56,6 +58,8 @@ class TenantIsolationTest {
         alphaPayload.put("description", "Alpha-owned ticket");
         Map<String, Object> betaPayload = TicketFixtures.newTicketPayload(sharedExternalId, TicketFixtures.ACKNOWLEDGED_SERVICE_ID);
         betaPayload.put("description", "Beta-owned ticket");
+        CreatedTickets.record(Tenant.ALPHA, sharedExternalId);
+        CreatedTickets.record(Tenant.BETA, sharedExternalId);
 
         TroubleTicketApi.asTenant(Tenant.ALPHA)
                 .body(alphaPayload)

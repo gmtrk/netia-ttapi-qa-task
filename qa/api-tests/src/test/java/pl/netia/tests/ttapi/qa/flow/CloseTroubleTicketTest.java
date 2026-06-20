@@ -7,13 +7,15 @@ import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import pl.netia.tests.ttapi.qa.support.ApiErrorAssertions;
+import pl.netia.tests.ttapi.qa.support.BaseTest;
 import pl.netia.tests.ttapi.qa.support.Tenant;
 import pl.netia.tests.ttapi.qa.support.TicketFixtures;
+import pl.netia.tests.ttapi.qa.support.TicketStatus;
 import pl.netia.tests.ttapi.qa.support.TroubleTicketApi;
 
-class CloseTroubleTicketTest {
+class CloseTroubleTicketTest extends BaseTest {
 
-    private static final Map<String, Object> CLOSE_REQUEST = Map.of("status", "closed");
+    private static final Map<String, Object> CLOSE_REQUEST = Map.of("status", TicketStatus.CLOSED.apiValue());
 
     @Test
     @DisplayName("TC-FLOW-06 — close from acknowledged returns 200 with status closed")
@@ -26,7 +28,7 @@ class CloseTroubleTicketTest {
                 .patch(TroubleTicketApi.TICKET_BY_ID, externalId)
                 .then()
                 .statusCode(200)
-                .body("status", equalTo("closed"));
+                .body("status", equalTo(TicketStatus.CLOSED.apiValue()));
     }
 
     @Test

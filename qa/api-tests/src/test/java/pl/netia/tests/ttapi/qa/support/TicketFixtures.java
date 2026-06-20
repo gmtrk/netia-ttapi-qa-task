@@ -22,31 +22,32 @@ public final class TicketFixtures {
         payload.put("externalId", externalId);
         payload.put("serviceId", serviceId);
         payload.put("description", "QA fixture ticket");
-        payload.put("status", "new");
+        payload.put("status", TicketStatus.NEW.apiValue());
         return payload;
     }
 
     public static String createAcknowledgedTicket(Tenant tenant) {
         String externalId = uniqueExternalId();
+        CreatedTickets.record(tenant, externalId);
         TroubleTicketApi.asTenant(tenant)
                 .body(newTicketPayload(externalId, ACKNOWLEDGED_SERVICE_ID))
                 .when()
                 .post(TroubleTicketApi.TICKETS)
                 .then()
                 .statusCode(201)
-                .body("status", equalTo("acknowledged"));
+                .body("status", equalTo(TicketStatus.ACKNOWLEDGED.apiValue()));
         return externalId;
     }
 
     public static String createClosedTicket(Tenant tenant) {
         String externalId = createAcknowledgedTicket(tenant);
         TroubleTicketApi.asTenant(tenant)
-                .body(Map.of("status", "closed"))
+                .body(Map.of("status", TicketStatus.CLOSED.apiValue()))
                 .when()
                 .patch(TroubleTicketApi.TICKET_BY_ID, externalId)
                 .then()
                 .statusCode(200)
-                .body("status", equalTo("closed"));
+                .body("status", equalTo(TicketStatus.CLOSED.apiValue()));
         return externalId;
     }
 }

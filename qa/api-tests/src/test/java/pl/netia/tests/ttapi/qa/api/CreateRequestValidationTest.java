@@ -5,11 +5,13 @@ import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import pl.netia.tests.ttapi.qa.support.ApiErrorAssertions;
+import pl.netia.tests.ttapi.qa.support.BaseTest;
 import pl.netia.tests.ttapi.qa.support.Tenant;
 import pl.netia.tests.ttapi.qa.support.TicketFixtures;
+import pl.netia.tests.ttapi.qa.support.TicketStatus;
 import pl.netia.tests.ttapi.qa.support.TroubleTicketApi;
 
-class CreateRequestValidationTest {
+class CreateRequestValidationTest extends BaseTest {
 
     @Test
     @DisplayName("TC-API-07 — create without required field description returns 400 VALIDATION_ERROR")
@@ -33,7 +35,7 @@ class CreateRequestValidationTest {
     void createWithStatusOtherThanNewReturnsValidationError() {
         Map<String, Object> payload = TicketFixtures.newTicketPayload(
                 TicketFixtures.uniqueExternalId(), TicketFixtures.ACKNOWLEDGED_SERVICE_ID);
-        payload.put("status", "acknowledged");
+        payload.put("status", TicketStatus.ACKNOWLEDGED.apiValue());
 
         Response response = TroubleTicketApi.asTenant(Tenant.ALPHA)
                 .body(payload)
