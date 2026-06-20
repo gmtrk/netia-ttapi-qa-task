@@ -2,23 +2,15 @@ package pl.netia.tests.ttapi.qa.support;
 
 public enum Tenant {
 
-    ALPHA("alpha", "Test1234!"),
-    BETA("beta", "Test1234!"),
-    GAMMA("gamma", "Test1234!");
-
-    private final String username;
-    private final String password;
-
-    Tenant(String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
+    ALPHA,
+    BETA,
+    GAMMA;
 
     public String username() {
-        return username;
+        return name().toLowerCase();
     }
 
     public String password() {
-        return password;
+        return TestEnvironment.KEYCLOAK_PASSWORD;
     }
 }
