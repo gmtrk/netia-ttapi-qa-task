@@ -5,16 +5,22 @@ export class TicketDetailPage extends BaseScreen {
   readonly closeButton: Locator;
   readonly noteInput: Locator;
   readonly addNoteButton: Locator;
+  readonly errorAlert: Locator;
 
   constructor(page: Page) {
     super(page);
     this.closeButton = page.getByRole('button', { name: 'Zamknij zgłoszenie' });
     this.noteInput = page.getByLabel('Treść notatki');
     this.addNoteButton = page.getByRole('button', { name: 'Dodaj notatkę' });
+    this.errorAlert = page.getByRole('alert');
   }
 
   heading(externalId: string): Locator {
     return this.page.getByRole('heading', { name: externalId });
+  }
+
+  description(text: string): Locator {
+    return this.note(text);
   }
 
   statusChip(label: string): Locator {

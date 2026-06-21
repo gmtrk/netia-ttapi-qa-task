@@ -9,6 +9,8 @@ export interface NewTicketInput {
 }
 
 export class CreateTicketPage extends BaseScreen {
+  static readonly path = '/tickets/new';
+
   readonly externalIdInput: Locator;
   readonly serviceIdInput: Locator;
   readonly descriptionInput: Locator;
@@ -26,8 +28,10 @@ export class CreateTicketPage extends BaseScreen {
     this.requiredFieldError = page.getByText('Pole wymagane');
   }
 
-  async goto(): Promise<void> {
-    await this.page.goto('/tickets/new');
+  static async open(page: Page): Promise<CreateTicketPage> {
+    const createPage = new CreateTicketPage(page);
+    await page.goto(CreateTicketPage.path);
+    return createPage;
   }
 
   async fillForm(input: NewTicketInput): Promise<void> {

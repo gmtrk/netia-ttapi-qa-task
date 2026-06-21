@@ -3,6 +3,8 @@ import { BaseScreen } from './BaseScreen';
 import { CreateTicketPage } from './CreateTicketPage';
 
 export class TicketListPage extends BaseScreen {
+  static readonly path = '/';
+
   readonly heading: Locator;
   readonly newTicketButton: Locator;
 
@@ -12,8 +14,10 @@ export class TicketListPage extends BaseScreen {
     this.newTicketButton = page.getByRole('button', { name: 'Nowe zgłoszenie' });
   }
 
-  async goto(): Promise<void> {
-    await this.page.goto('/');
+  static async open(page: Page): Promise<TicketListPage> {
+    const listPage = new TicketListPage(page);
+    await page.goto(TicketListPage.path);
+    return listPage;
   }
 
   async openCreateForm(): Promise<CreateTicketPage> {
