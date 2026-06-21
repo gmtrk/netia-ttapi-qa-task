@@ -13,6 +13,7 @@ import pl.netia.tests.ttapi.qa.support.BaseTest;
 import pl.netia.tests.ttapi.qa.support.CreatedTickets;
 import pl.netia.tests.ttapi.qa.support.Tenant;
 import pl.netia.tests.ttapi.qa.support.TicketFixtures;
+import pl.netia.tests.ttapi.qa.support.TicketStatus;
 import pl.netia.tests.ttapi.qa.support.TroubleTicketApi;
 
 class TenantIsolationTest extends BaseTest {
@@ -34,6 +35,36 @@ class TenantIsolationTest extends BaseTest {
         Response response = TroubleTicketApi.asTenant(Tenant.BETA)
                 .when()
                 .get(TroubleTicketApi.TICKET_BY_ID, alphaTicket)
+                .then()
+                .extract()
+                .response();
+        ApiErrorAssertions.assertApiError(response, 404, "TROUBLE_TICKET_NOT_FOUND");
+    }
+
+    @Test
+    @DisplayName("TC-SEC-03 — closing a foreign tenant's ticket returns 404 TROUBLE_TICKET_NOT_FOUND")
+    void closeForeignTenantTicketReturnsNotFound() {
+        String alphaTicket = TicketFixtures.createAcknowledgedTicket(Tenant.ALPHA);
+
+        Response response = TroubleTicketApi.asTenant(Tenant.BETA)
+                .body(Map.of("status", TicketStatus.CLOSED.apiValue()))
+                .when()
+                .patch(TroubleTicketApi.TICKET_BY_ID, alphaTicket)
+                .then()
+                .extract()
+                .response();
+        ApiErrorAssertions.assertApiError(response, 404, "TROUBLE_TICKET_NOT_FOUND");
+    }
+
+    @Test
+    @DisplayName("TC-SEC-04 — adding a note to a foreign tenant's ticket returns 404 TROUBLE_TICKET_NOT_FOUND")
+    void addNoteToForeignTenantTicketReturnsNotFound() {
+        String alphaTicket = TicketFixtures.createAcknowledgedTicket(Tenant.ALPHA);
+
+        Response response = TroubleTicketApi.asTenant(Tenant.BETA)
+                .body(Map.of("text", "Note from a foreign tenant"))
+                .when()
+                .post(TroubleTicketApi.TICKET_NOTES, alphaTicket)
                 .then()
                 .extract()
                 .response();
@@ -88,6 +119,34 @@ class TenantIsolationTest extends BaseTest {
                 .statusCode(200)
                 .body("externalId", equalTo(sharedExternalId))
                 .body("description", equalTo("Beta-owned ticket"));
+    }
+
+    @Test
+    @DisplayName("TC-SEC-09 — a foreign existing ticket yields the same 404 as a non-existent one (no enumeration)")
+    void foreignExistingTicketIsIndistinguishableFromNonExistent() {
+        String foreignExistingId = TicketFixtures.createAcknowledgedTicket(Tenant.ALPHA);
+        String neverExistingId = TicketFixtures.uniqueExternalId();
+
+        Response foreignExisting = getTicketAsTenant(Tenant.BETA, foreignExistingId);
+        Response neverExisting = getTicketAsTenant(Tenant.BETA, neverExistingId);
+
+        ApiErrorAssertions.assertApiError(foreignExisting, 404, "TROUBLE_TICKET_NOT_FOUND");
+        ApiErrorAssertions.assertApiError(neverExisting, 404, "TROUBLE_TICKET_NOT_FOUND");
+        assertThat(messageTemplate(foreignExisting, foreignExistingId))
+                .isEqualTo(messageTemplate(neverExisting, neverExistingId));
+    }
+
+    private static Response getTicketAsTenant(Tenant tenant, String externalId) {
+        return TroubleTicketApi.asTenant(tenant)
+                .when()
+                .get(TroubleTicketApi.TICKET_BY_ID, externalId)
+                .then()
+                .extract()
+                .response();
+    }
+
+    private static String messageTemplate(Response response, String externalId) {
+        return response.jsonPath().getString("message").replace(externalId, "{externalId}");
     }
 
     private static List<String> ownTicketExternalIds(Tenant tenant) {

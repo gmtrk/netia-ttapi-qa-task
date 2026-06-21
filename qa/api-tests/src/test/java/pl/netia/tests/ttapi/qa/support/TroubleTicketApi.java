@@ -22,6 +22,10 @@ public final class TroubleTicketApi {
         return baseRequest();
     }
 
+    public static RequestSpecification withBearerToken(String token) {
+        return baseRequest().auth().oauth2(token);
+    }
+
     private static RequestSpecification baseRequest() {
         return given()
                 .baseUri(TestEnvironment.API_BASE_URL)
