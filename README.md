@@ -1,5 +1,21 @@
 # TTAPI — uruchomienie w środowisku Docker
 
+---
+
+# Zadanie QA — testy i strategia
+
+**Rozwiązanie zadania QA (strategia testów + kod testów) znajduje się w katalogu [`qa/`](qa/).**
+
+## Instrukcja uruchomienia testów: **[`qa/README.md`](qa/README.md)**
+
+- [Strategia testów](qa/strategia-testow.md) - obszary, priorytety, ryzyka, katalog scenariuszy
+- [Testy API](qa/api-tests/) - Java · JUnit 5 · REST Assured
+- [Testy UI](qa/ui-tests/) - TypeScript · Playwright
+
+_Poniżej znajduje się oryginalna dokumentacja samej aplikacji TTAPI._
+
+---
+
 ## Wymagania
 
 - Docker Engine 24+
