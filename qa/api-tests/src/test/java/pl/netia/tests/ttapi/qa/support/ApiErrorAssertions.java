@@ -14,4 +14,10 @@ public final class ApiErrorAssertions {
         assertThat(response.jsonPath().getString("code")).isEqualTo(expectedErrorCode);
         assertThat(response.jsonPath().getString("message")).isNotBlank();
     }
+
+    public static void assertErrorSchema(Response response) {
+        assertThat(response.body().asString()).isNotBlank();
+        assertThat(response.jsonPath().getString("code")).isNotBlank();
+        assertThat(response.jsonPath().getString("message")).isNotBlank();
+    }
 }

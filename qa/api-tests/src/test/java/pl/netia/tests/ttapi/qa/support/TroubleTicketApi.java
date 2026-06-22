@@ -26,6 +26,14 @@ public final class TroubleTicketApi {
         return baseRequest().auth().oauth2(token);
     }
 
+    public static RequestSpecification atRoot() {
+        return given().baseUri(TestEnvironment.API_BASE_URL);
+    }
+
+    public static RequestSpecification atRootAsTenant(Tenant tenant) {
+        return atRoot().auth().oauth2(KeycloakTokenClient.accessTokenFor(tenant));
+    }
+
     private static RequestSpecification baseRequest() {
         return given()
                 .baseUri(TestEnvironment.API_BASE_URL)
